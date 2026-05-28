@@ -1,0 +1,19 @@
+README.md
+  s_6ce2868e67a0e7::t_63f38b6882dc70 30,37,39-51,65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6b76f5f9b428999c87ac7f2715d71449feb887b1",
+  "prompts": {},
+  "sessions": {
+    "s_6ce2868e67a0e7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1fa8068d-a74c-4679-abbc-c822f15ce77a",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "bert.degeyter <bert.degeyter@showpad.com>"
+    }
+  }
+}
