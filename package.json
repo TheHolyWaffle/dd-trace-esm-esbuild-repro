@@ -1,0 +1,17 @@
+{
+  "name": "dd-trace-esm-esbuild-repro",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "start": "node dist/index.mjs",
+    "repro": "npm run build && npm run start"
+  },
+  "dependencies": {
+    "@smithy/smithy-client": "4.4.1",
+    "dd-trace": "5.98.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.4"
+  }
+}
