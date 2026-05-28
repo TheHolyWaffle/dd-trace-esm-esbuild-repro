@@ -27,16 +27,28 @@ ReferenceError: arguments is not defined
 
 ## Test matrix
 
-Run `node test-matrix.mjs` to test all four combinations:
+### format x minify
 
 | format | minify | result |
 |--------|--------|--------|
 | cjs    | false  | OK     |
 | cjs    | true   | OK     |
 | esm    | false  | OK     |
-| **esm**| **true**| **CRASH: `ReferenceError: arguments is not defined`** |
+| **esm**| **true**| **CRASH** |
 
-Only `format: "esm"` + `minify: true` triggers the crash.
+### Narrowing: which minify sub-option?
+
+`minify: true` enables three sub-options. Testing each individually with `format: "esm"`:
+
+| option             | result |
+|--------------------|--------|
+| no minify          | OK     |
+| minify (all three) | CRASH  |
+| minifyWhitespace   | OK     |
+| **minifyIdentifiers** | **CRASH** |
+| minifySyntax       | OK     |
+
+**`minifyIdentifiers` is the specific trigger.** It causes esbuild to restructure how CJS modules are inlined into the ESM bundle, pushing the dd-trace `(function(){...})(...arguments)` wrapper out of the `__commonJS` function scope and into ESM top-level where `arguments` is undefined.
 
 ## Root cause
 
@@ -50,7 +62,7 @@ In `packages/datadog-esbuild/index.js`, the `onLoad` handler wraps instrumented 
 
 The CJS/ESM decision is based on the **source file** (`isESMFile` checks file extension and `package.json` `"type"` field), not the **output format**.
 
-Without `minify`, esbuild's `__commonJS` wrapper accidentally provides a function scope where `arguments` is available. With `minify: true`, esbuild inlines and restructures the CJS wrappers, exposing the `arguments` reference at ESM top-level — causing the crash.
+Without `minifyIdentifiers`, esbuild's `__commonJS` wrapper provides a function scope where `arguments` is available. With `minifyIdentifiers`, esbuild restructures those wrappers, exposing the `arguments` reference at ESM top-level.
 
 `isESMBuild()` (line 65) correctly detects ESM output but is only used for the banner — never in the `onLoad` wrapping logic.
 
